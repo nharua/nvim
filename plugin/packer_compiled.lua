@@ -114,6 +114,11 @@ _G.packer_plugins = {
     path = "/home/amin/.local/share/nvim/site/pack/packer/start/lualine.nvim",
     url = "https://github.com/nvim-lualine/lualine.nvim"
   },
+  ["mini.nvim"] = {
+    loaded = true,
+    path = "/home/amin/.local/share/nvim/site/pack/packer/start/mini.nvim",
+    url = "https://github.com/echasnovski/mini.nvim"
+  },
   ["neo-tree.nvim"] = {
     loaded = true,
     path = "/home/amin/.local/share/nvim/site/pack/packer/start/neo-tree.nvim",

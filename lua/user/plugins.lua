@@ -81,6 +81,10 @@ return packer.startup(function(use)
     }
   }
 
+  -- indentline
+  -- use "lukas-reineke/indent-blankline.nvim"
+    use { 'echasnovski/mini.nvim', branch = 'stable' }
+
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
   if PACKER_BOOTSTRAP then
