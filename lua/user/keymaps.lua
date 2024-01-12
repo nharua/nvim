@@ -25,7 +25,7 @@ keymap("n", "<C-j>", "<C-w>j", opts)      --down
 keymap("n", "<C-k>", "<C-w>k", opts)      --up
 keymap("n", "<C-l>", "<C-w>l", opts)      --right
 
-keymap("n", "<leader>e", ":Lex 30<cr>", opts)
+-- keymap("n", "<leader>e", ":Lex 30<cr>", opts)
 
 -- Resize with arrows
 keymap("n", "<C-Up>", ":resize +2<CR>", opts)
@@ -68,4 +68,7 @@ keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
 -- keymap("n", "<leader>f", "<cmd>Telescope find_files<cr>", opts)
 keymap("n", "<c-p>", "<cmd>lua require'telescope.builtin'.find_files(require('telescope.themes').get_dropdown({ previewer = false }))<cr>", opts)
 keymap("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", opts)
-keymap("n", "<leader>fb", "<cmd>Telescope buffers<cr>", opts)
+keymap("n", "<leader>fb", "<cmid>Telescope buffers<cr>", opts)
+
+-- Nvimtree
+keymap("n", "<leader>e", ":Neotree toggle<cr>", opts)

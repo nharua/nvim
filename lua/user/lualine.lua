@@ -65,7 +65,8 @@ end
 lualine.setup({
 	options = {
 		icons_enabled = true,
-		theme = "auto",
+		-- theme = "auto",
+		theme = "gruvbox_light",
 		component_separators = { left = "", right = "" },
 		section_separators = { left = "", right = "" },
 		disabled_filetypes = { "dashboard", "NvimTree", "Outline" },
@@ -76,7 +77,8 @@ lualine.setup({
 		lualine_b = { mode },
 		lualine_c = {},
 		-- lualine_x = { "encoding", "fileformat", "filetype" },
-		lualine_x = { diff, spaces, "encoding", filetype },
+		-- lualine_x = { diff, spaces, "encoding", filetype },
+		lualine_x = { diff, 'filename', "encoding", filetype },
 		lualine_y = { location },
 		lualine_z = { progress },
 	},
