@@ -8,7 +8,7 @@ if fn.empty(fn.glob(install_path)) > 0 then
     "clone",
     "--depth",
     "1",
-    "https://github.com/wbthomason/packer.nvim",
+    "https://github.com/wbth:womasonomason/packer.nvim",
     install_path,
   }
   print "Installing packer close and reopen Neovim..."
@@ -48,7 +48,7 @@ return packer.startup(function(use)
 
   -- Colorscheme
   use { "catppuccin/nvim", as = "catppuccin" }
-  
+
   -- lualine
   use { 'nvim-lualine/lualine.nvim' }
 
@@ -58,10 +58,18 @@ return packer.startup(function(use)
   use "hrsh7th/cmp-path" -- path completions
   use "hrsh7th/cmp-cmdline" -- cmdline completions
   use "saadparwaiz1/cmp_luasnip" -- snippet completions
+  use "hrsh7th/cmp-nvim-lsp"
+  use "hrsh7th/cmp-nvim-lua"
 
   -- snippets
   use "L3MON4D3/LuaSnip" --snippet engine
   use "rafamadriz/friendly-snippets" -- a bunch of snippets to use
+
+  -- LSP
+  use "neovim/nvim-lspconfig" -- enable LSP
+  use "williamboman/mason.nvim" -- simple to use language server installer
+  use "williamboman/mason-lspconfig.nvim" -- simple to use language server installer
+  -- use 'jose-elias-alvarez/null-ls.nvim' -- LSP diagnostics and code actions
 
   -- Telescope
   use "nvim-telescope/telescope.nvim"
@@ -71,7 +79,7 @@ return packer.startup(function(use)
   use {
   "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
-    requires = { 
+    requires = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
@@ -87,7 +95,7 @@ return packer.startup(function(use)
 
   -- toggleterm
   use "akinsho/toggleterm.nvim"
-  
+
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
   if PACKER_BOOTSTRAP then
