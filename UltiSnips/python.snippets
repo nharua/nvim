@@ -1,0 +1,20 @@
+snippet header "Python File Header"
+##########################################################################
+# Copyright `!v strftime("%Y")` `!v g:snips_company` All Rights Reserved.
+#
+# No portions of this material may be reproduced in any form without
+# the written permission of `!v g:snips_company`.
+#
+# File name    : `!v expand('%:t')`
+# Author       : `!v (exists('g:snips_authorname') ? g:snips_authorname : 'Unknown')` - `!v (exists('g:snips_authoremail') ? g:snips_authoremail : 'N/A')`
+# Date Created : `!v strftime('%Y-%m-%d')`
+# Description  : ${1:Short description of the file}
+##########################################################################
+
+# Change History:
+#   Date        Author          Description
+#   ----------  --------------  ----------------------------------------
+#   `!v strftime('%Y-%m-%d')`  `!v (exists('g:snips_authorname') ? g:snips_authorname : 'Unknown')`    Initial version
+
+$0
+endsnippet
