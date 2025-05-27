@@ -1,4 +1,4 @@
-rturn({
+return {
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
 		branch = "main",
@@ -224,4 +224,4 @@ rturn({
 			file_types = { "markdown", "copilot-chat" },
 		},
 	},
-})
+}
