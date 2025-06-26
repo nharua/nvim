@@ -203,6 +203,7 @@ return {
 					end,
 					desc = "Prompt list",
 				},
+				{ "<leader>ac", "<cmd>CopilotChat<cr>", desc = "Toggle Copilot Chat" },
 			}
 		end,
 	},
