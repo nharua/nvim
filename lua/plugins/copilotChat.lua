@@ -41,7 +41,7 @@ return {
 				answer_header = "  Copilot ",
 				error_header = "## Error ",
 				prompts = copilot_prompts,
-				model = "gpt-4o",
+				model = "gpt-4.1",
 				mappings = {
 					complete = { detail = "Use @<Tab> or /<Tab> for options.", insert = "<Tab>" },
 					close = { normal = "q", insert = "<C-c>" },
