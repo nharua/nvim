@@ -3,7 +3,8 @@ return {
 	version = "*",
 	opts = {
 		open_mapping = [[<C-\>]],
-		direction = "float",
+		-- direction = "float",
+		direction = "horizontal",
 		size = 20,
 		shade_filetypes = {},
 		hide_numbers = true,
