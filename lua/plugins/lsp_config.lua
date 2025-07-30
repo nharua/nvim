@@ -179,8 +179,6 @@ return {
 					map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
 
 					-- Diagnostics
-					map("[d", vim.diagnostic.goto_prev, "Go to previous diagnostic")
-					map("]d", vim.diagnostic.goto_next, "Go to next diagnostic")
 					map("<leader>e", vim.diagnostic.open_float, "Open floating diagnostic message")
 					map("<leader>q", vim.diagnostic.setloclist, "Open diagnostics list")
 
