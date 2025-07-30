@@ -70,11 +70,17 @@ vim.opt.expandtab = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 
+-- Sets global variables for snippet expansion using user information from Git config.
+--
+-- - vim.g.snips_authoremail: Populated with the user's global Git email (user.email).
+-- - vim.g.snips_authorname:  Populated with the user's global Git name (user.name).
+-- - vim.g.snips_company:     Populated with the user's local Git company (user.company),
+-- 													  or falls back to "Nha Rua Inc." if not set.
+--
 vim.g.snips_authoremail = vim.fn.system("git config --global user.email"):gsub("\n", "")
 vim.g.snips_authorname = vim.fn.system("git config --global user.name"):gsub("\n", "")
 local company = vim.fn.system("git config user.company"):gsub("%s+$", "")
 if company == "" then
-	-- fallback nếu không có
 	company = "Nha Rua Inc."
 end
 vim.g.snips_company = company
