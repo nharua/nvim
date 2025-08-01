@@ -10,6 +10,17 @@ local opts = { noremap = true, silent = true }
 map({ "n", "v" }, "<leader>W", "<cmd>w<CR>", { desc = "Write file" })
 map({ "n", "v" }, "<leader>x", "<cmd>q<CR>", { desc = "Quit window" })
 
+-- ==== Home/End line ====
+-- Normal mode
+vim.keymap.set("n", "<M-l>", "$", opts) -- Move to end of line
+vim.keymap.set("n", "<M-h>", "^", opts) -- Move to start of line
+-- Visual mode
+vim.keymap.set("v", "<M-l>", "$", opts) -- Select to end of line
+vim.keymap.set("v", "<M-h>", "^", opts) -- Select to start of line
+-- Insert mode
+vim.keymap.set("i", "<M-l>", "<C-o>$", opts) -- Move to end of line
+vim.keymap.set("i", "<M-h>", "<C-o>^", opts) -- Move to start of line
+
 -- ==== Window Navigation ====
 map("n", "<C-k>", "<cmd>wincmd k<CR>", { desc = "Move to window ↑" })
 map("n", "<C-j>", "<cmd>wincmd j<CR>", { desc = "Move to window ↓" })
