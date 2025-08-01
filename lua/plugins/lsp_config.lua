@@ -2,7 +2,18 @@ return {
 	-- Plugin: Mason for managing LSP/DAP/Formatters
 	{
 		"williamboman/mason.nvim",
-		config = true,
+		config = function()
+			require("mason").setup({
+				ui = {
+					border = "rounded", -- Sử dụng border tròn
+					icons = {
+						package_installed = "✓",
+						package_pending = "➜",
+						package_uninstalled = "✗",
+					},
+				},
+			})
+		end,
 	},
 	-- Plugin: Bridge mason with lspconfig
 	{
@@ -13,9 +24,10 @@ return {
 					"lua_ls",
 					"pyright",
 					"verible",
-					"clangd", -- Chỉ cần clangd, tốt hơn ccls
-					-- "ccls",  -- Bỏ ccls để tránh conflict
+					"clangd",
 				},
+				-- Tự động cài đặt LSP servers khi cần
+				automatic_installation = true,
 			})
 		end,
 	},
@@ -32,13 +44,18 @@ return {
 					"clang-format",
 					"cpplint",
 				},
+				-- Tự động cài đặt tools
+				auto_update = false,
+				run_on_start = true,
 			})
 		end,
 	},
 	-- Plugin: LSP status UI
 	{
 		"j-hui/fidget.nvim",
-		opts = {},
+		config = function()
+			require("fidget").setup({})
+		end,
 	},
 	-- Plugin: Main LSP config
 	{
@@ -52,6 +69,9 @@ return {
 			local function setup_server(name, opts)
 				opts = opts or {}
 				opts.capabilities = capabilities
+				-- Thêm progress reporting
+				opts.handlers = opts.handlers or {}
+				opts.handlers["$/progress"] = vim.lsp.handlers["$/progress"]
 				lspconfig[name].setup(opts)
 			end
 
@@ -70,13 +90,47 @@ return {
 						completion = {
 							callSnippet = "Replace",
 						},
+						-- Tối ưu performance
+						telemetry = { enable = false },
+						hint = {
+							enable = true,
+							arrayIndex = "Disable",
+							await = true,
+							paramName = "Disable",
+							paramType = true,
+							semicolon = "Disable",
+							setType = false,
+						},
 					},
 				},
 			})
 
-			-- Pyright
+			-- Pyright cho Python
 			setup_server("pyright", {
-				root_dir = root_pattern(".git", "setup.py", "setup.cfg", "requirements.txt", "Pipfile"),
+				root_dir = root_pattern(
+					".git",
+					"setup.py",
+					"setup.cfg",
+					"requirements.txt",
+					"Pipfile",
+					"pyproject.toml"
+				),
+				settings = {
+					python = {
+						analysis = {
+							-- Tăng tốc độ analysis
+							autoSearchPaths = true,
+							diagnosticMode = "openFilesOnly",
+							useLibraryCodeForTypes = true,
+							typeCheckingMode = "basic", -- có thể đổi thành "strict" nếu cần
+						},
+					},
+				},
+				-- Đảm bảo progress được report
+				on_attach = function(client, bufnr)
+					-- Enable progress reporting
+					client.server_capabilities.workspaceSymbolProvider = true
+				end,
 			})
 
 			-- Verible (SystemVerilog/Verilog)
@@ -84,9 +138,9 @@ return {
 				cmd = {
 					"verible-verilog-ls",
 					"--rules_config",
-					vim.fn.expand("~/.config/nvim/.rules.verible_lint"), -- Fix path
+					vim.fn.expand("~/.config/nvim/.rules.verible_lint"),
 				},
-				root_dir = root_pattern(".git", "*.sv", "*.v", "*.vh"), -- Better root detection
+				root_dir = root_pattern(".git", "*.sv", "*.v"),
 			})
 
 			-- Clangd for C/C++
@@ -99,6 +153,9 @@ return {
 					"--completion-style=detailed",
 					"--function-arg-placeholders",
 					"--fallback-style=llvm",
+					"--all-scopes-completion",
+					"--cross-file-rename",
+					"--log=verbose",
 				},
 				root_dir = root_pattern(
 					".clangd",
@@ -107,6 +164,8 @@ return {
 					"compile_commands.json",
 					"compile_flags.txt",
 					"configure.ac",
+					"CMakeLists.txt",
+					"Makefile",
 					".git"
 				),
 				init_options = {
@@ -114,7 +173,9 @@ return {
 					completeUnimported = true,
 					clangdFileStatus = true,
 				},
-				-- Specific settings for C projects
+				capabilities = vim.tbl_extend("keep", capabilities, {
+					offsetEncoding = { "utf-16" },
+				}),
 				settings = {
 					clangd = {
 						InlayHints = {
@@ -123,9 +184,13 @@ return {
 							ParameterNames = true,
 							DeducedTypes = true,
 						},
-						fallbackFlags = { "-std=c17" }, -- Default C standard
+						fallbackFlags = { "-std=c17" },
 					},
 				},
+				-- Đảm bảo progress được report
+				on_attach = function(client, bufnr)
+					client.server_capabilities.semanticTokensProvider = nil
+				end,
 			})
 
 			-- Global LSP settings
@@ -144,7 +209,7 @@ return {
 					source = "if_many",
 				},
 				float = {
-					source = "always",
+					source = true,
 					border = "rounded",
 				},
 				signs = true,
@@ -189,21 +254,47 @@ return {
 						print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
 					end, "[W]orkspace [L]ist Folders")
 
-					-- C-specific keymaps
-					if vim.bo[ev.buf].filetype == "c" or vim.bo[ev.buf].filetype == "cpp" then
+					-- Language-specific keymaps
+					local filetype = vim.bo[ev.buf].filetype
+
+					-- C/C++ specific
+					if filetype == "c" or filetype == "cpp" then
 						map("<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", "[C]lang Switch [H]eader")
 						map("<leader>ct", "<cmd>ClangdTypeHierarchy<cr>", "[C]lang [T]ype Hierarchy")
 						map("<leader>cs", "<cmd>ClangdSymbolInfo<cr>", "[C]lang [S]ymbol Info")
 					end
+
+					-- Python specific
+					if filetype == "python" then
+						map("<leader>po", "<cmd>PyrightOrganizeImports<cr>", "[P]ython [O]rganize Imports")
+					end
+
+					-- Print attachment confirmation
+					print(
+						string.format(
+							"LSP attached: %s (%s)",
+							vim.lsp.get_active_clients({ bufnr = ev.buf })[1].name,
+							filetype
+						)
+					)
 				end,
 			})
 
-			-- Auto-format on save for C files
+			-- Auto-format on save
 			vim.api.nvim_create_autocmd("BufWritePre", {
 				group = vim.api.nvim_create_augroup("AutoFormat", { clear = true }),
-				pattern = { "*.c", "*.h", "*.cpp", "*.hpp" },
+				pattern = { "*.c", "*.h", "*.cpp", "*.hpp", "*.py", "*.lua" },
 				callback = function()
 					vim.lsp.buf.format({ async = false })
+				end,
+			})
+
+			-- Progress reporting debug (tạm thời để debug)
+			vim.api.nvim_create_autocmd("LspProgress", {
+				callback = function(args)
+					if args.data and args.data.result then
+						print("LSP Progress:", vim.inspect(args.data.result))
+					end
 				end,
 			})
 		end,
