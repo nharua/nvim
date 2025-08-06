@@ -70,6 +70,9 @@ vim.opt.expandtab = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 
+-- Set the default border for all floating windows. (new in Neovim 11.0)
+vim.opt.winborder = "rounded"
+
 -- Sets global variables for snippet expansion using user information from Git config.
 --
 -- - vim.g.snips_authoremail: Populated with the user's global Git email (user.email).
