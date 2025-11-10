@@ -12,11 +12,11 @@ map({ "n", "v" }, "<leader>x", "<cmd>q<CR>", { desc = "Quit window" })
 
 -- ==== Home/End line ====
 -- Normal mode
-vim.keymap.set("n", "<M-l>", "$", opts) -- Move to end of line
-vim.keymap.set("n", "<M-h>", "^", opts) -- Move to start of line
+vim.keymap.set("n", "<M-l>", "$", opts)      -- Move to end of line
+vim.keymap.set("n", "<M-h>", "^", opts)      -- Move to start of line
 -- Visual mode
-vim.keymap.set("v", "<M-l>", "$", opts) -- Select to end of line
-vim.keymap.set("v", "<M-h>", "^", opts) -- Select to start of line
+vim.keymap.set("v", "<M-l>", "$", opts)      -- Select to end of line
+vim.keymap.set("v", "<M-h>", "^", opts)      -- Select to start of line
 -- Insert mode
 vim.keymap.set("i", "<M-l>", "<C-o>$", opts) -- Move to end of line
 vim.keymap.set("i", "<M-h>", "<C-o>^", opts) -- Move to start of line
@@ -46,7 +46,7 @@ map("n", "<leader>o", "<cmd>Neotree toggle<CR>", { desc = "📁 Toggle file expl
 
 -- ==== Diagnostics ====
 map("n", "<leader>e", vim.diagnostic.open_float, { desc = "🔍 Show diagnostic float" })
-map("n", "<leader>Q", vim.diagnostic.setloclist, { desc = "📋 Diagnostic to LocList" })
+-- map("n", "<leader>Q", vim.diagnostic.setloclist, { desc = "📋 Diagnostic to LocList" })
 
 -- Toggle virtual text
 local function toggle_virtual_text()
@@ -70,6 +70,7 @@ end
 vim.api.nvim_create_user_command("DiagnosticsToggle", toggle_diagnostics, {
 	desc = "Toggle all diagnostics globally",
 })
+map("n", "<leader>dd", "<cmd>DiagnosticsToggle<CR>", { desc = "🩹 Toggle diagnostics globally" })
 
 -- ==== TODO ====
 map("n", "<leader>tt", "<cmd>TodoTelescope<CR>", { desc = "📝 Search for TODOs" })
@@ -131,6 +132,10 @@ end, { desc = "[S]earch [N]eovim files" })
 -- Register the keymaps with WhichKey
 local wk = require("which-key")
 wk.add({
+	{
+		"<leader>d",
+		group = "Diagnostics",
+	}, -- group
 	{
 		"<leader>s",
 		group = "Telescope Search",
