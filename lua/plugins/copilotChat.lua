@@ -6,7 +6,7 @@ return {
 		opts = function()
 			local hostname = vim.fn.system("hostname"):gsub("%s+", "")
 			local user = hostname or vim.env.USER or "User"
-			-- Define custom prompts here (merged in opts below)
+
 			local copilot_prompts = {
 				Explain = "Please explain how the following code works.",
 				Review = "Please review the following code and provide suggestions for improvement.",
@@ -15,25 +15,22 @@ return {
 				BetterNamings = "Please provide better names for the following variables and functions.",
 				Documentation = "Please provide documentation for the following code.",
 				GenerateReadme = [[
-					Generate a clean, professional, and concise README.md for this project. 
-					Only include the following sections, in this order:
-
-						1. Project Title and Short Description
-						2. Features
-						3. Prerequisites
-						4. Installation
-						5. Usage
-						6. Contributing
-						7. License
-
-					Do **not** include any of the following sections:
-					- Code Overview
-					- Error Handling
-					- Example Output
-					- Boilerplate intros or outros like “Here is a basic README…” or “Let me know if…”
-
-					Format using proper GitHub Markdown. Do not wrap the content in code blocks.
-					]],
+          Generate a clean, professional, and concise README.md for this project. 
+          Only include the following sections, in this order:
+            1. Project Title and Short Description
+            2. Features
+            3. Prerequisites
+            4. Installation
+            5. Usage
+            6. Contributing
+            7. License
+          Do **not** include:
+          - Code Overview
+          - Error Handling
+          - Example Output
+          - Boilerplate intros or outros like “Here is a basic README…” or “Let me know if…”
+          Format using proper GitHub Markdown. Do not wrap the content in code blocks.
+        ]],
 			}
 
 			return {
@@ -52,22 +49,47 @@ return {
 				},
 			}
 		end,
+
 		config = function(_, opts)
 			require("CopilotChat").setup(opts)
 		end,
+
 		keys = function()
 			local select = require("CopilotChat.select")
 			local chat = require("CopilotChat")
 
+			--- Generate README callback
+			local function generate_readme()
+				chat.ask("GenerateReadme", {
+					selection = select.buffer,
+					callback = function(response)
+						local cleaned = response
+							:gsub("(?i)^Here is a basic README.-\n+", "")
+							:gsub("(?i)\n*Let me know if you'd like to customize this further!%s*", "")
+							:gsub("```markdown", "")
+							:gsub("```", "")
+						local path = vim.fn.getcwd() .. "/README.md"
+						local file = io.open(path, "w")
+						if file then
+							file:write(cleaned)
+							file:close()
+							vim.notify("README.md generated at " .. path, vim.log.levels.INFO)
+						else
+							vim.notify("Failed to write README.md", vim.log.levels.ERROR)
+						end
+					end,
+				})
+			end
+
 			return {
-				-- Visual mode actions
+				--- Visual Mode ---
 				{ "<leader>ae", "<cmd>CopilotChatExplain<cr>", mode = "x", desc = "Explain selection" },
 				{ "<leader>ar", "<cmd>CopilotChatReview<cr>", mode = "x", desc = "Review selection" },
 				{ "<leader>af", "<cmd>CopilotChatFixCode<cr>", mode = "x", desc = "Fix selection" },
 				{ "<leader>an", "<cmd>CopilotChatBetterNamings<cr>", mode = "x", desc = "Rename selection" },
 				{ "<leader>ad", "<cmd>CopilotChatDocs<cr>", mode = "x", desc = "Document selection" },
 
-				-- Current line actions
+				--- Current Line ---
 				{
 					"<leader>lf",
 					function()
@@ -80,24 +102,24 @@ return {
 					function()
 						chat.ask("BetterNamings", { selection = select.line })
 					end,
-					desc = "Rename in current line",
+					desc = "Rename in line",
 				},
 				{
 					"<leader>ld",
 					function()
 						chat.ask("Documentation", { selection = select.line })
 					end,
-					desc = "Document current line",
+					desc = "Document line",
 				},
 				{
 					"<leader>lx",
 					function()
 						chat.ask("FixError", { selection = select.line })
 					end,
-					desc = "Fix error in current line",
+					desc = "Fix error in line",
 				},
 
-				-- Current buffer actions
+				--- Buffer Level ---
 				{
 					"<leader>be",
 					function()
@@ -117,14 +139,14 @@ return {
 					function()
 						chat.ask("FixCode", { selection = select.buffer })
 					end,
-					desc = "Fix code in buffer",
+					desc = "Fix buffer",
 				},
 				{
 					"<leader>bn",
 					function()
 						chat.ask("BetterNamings", { selection = select.buffer })
 					end,
-					desc = "Rename in buffer",
+					desc = "Rename buffer",
 				},
 				{
 					"<leader>bd",
@@ -141,7 +163,7 @@ return {
 					desc = "Fix error in buffer",
 				},
 
-				-- Manual input
+				--- Manual Input ---
 				{
 					"<leader>ai",
 					function()
@@ -163,39 +185,12 @@ return {
 					desc = "Quick chat (buffer)",
 				},
 
-				-- README generations
-				{
-					"<leader>bR",
-					function()
-						chat.ask("GenerateReadme", {
-							selection = require("CopilotChat.select").buffer,
-							callback = function(response)
-								-- 🧹 Clean up common boilerplate Copilot text
-								local cleaned = response
-									:gsub("(?i)^Here is a basic README.-\n+", "") -- Remove intro
-									:gsub("(?i)\n*Let me know if you'd like to customize this further!%s*", "") -- Remove outro
-									:gsub("```markdown", "") -- If Copilot wraps it in code block
-									:gsub("```", "") -- Remove ending code block
-								-- Write response to README.md
-								local path = vim.fn.getcwd() .. "/README.md"
-								local file = io.open(path, "w")
-								if file then
-									file:write(cleaned)
-									file:close()
-									vim.notify("README.md generated at " .. path, vim.log.levels.INFO)
-								else
-									vim.notify("Failed to write README.md", vim.log.levels.ERROR)
-								end
-							end,
-						})
-					end,
-					desc = "CopilotChat - Generate README.md and write to file",
-				},
+				--- README Generation ---
+				{ "<leader>bR", generate_readme, desc = "Generate README.md" },
 
-				-- Utilities
+				--- Utilities ---
 				{ "<leader>al", "<cmd>CopilotChatReset<cr>", desc = "Reset chat" },
 				{ "<leader>a?", "<cmd>CopilotChatModels<cr>", desc = "Select model" },
-				{ "<leader>aa", "<cmd>CopilotChatAgents<cr>", desc = "Select agent" },
 				{
 					"<leader>ap",
 					function()
