@@ -17,3 +17,5 @@ require("options")
 require("lazy_manager")
 -- Load keymap
 require("keymaps")
+-- Load lsp
+require("lsp")
